@@ -119,10 +119,3 @@ enum TaskPriority {
   HIGH
 }
 
-<<<<<<< HEAD:backend/prisma/schema.prisma
-=======
-enum UserRole {
-  ADMIN
-  USER
-}
->>>>>>> 22d0531 (fix(api): align backend with CI standards):prisma/schema.prisma
