@@ -12,8 +12,8 @@ model Project {
   id          String     @id @default(cuid())
   name        String
   description String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
   activities  Activity[]
   members     Member[]
   tasks       Task[]
@@ -26,9 +26,9 @@ model Member {
   name                String
   role                String?
   email               String?
-  projectId           String
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
+  projectId           String           @map("project_id")
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
   activities          Activity[]
   project             Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   evaluationsGiven    PeerEvaluation[] @relation("Evaluator")
@@ -49,10 +49,10 @@ model Task {
   progress    Int          @default(0)
   status      TaskStatus   @default(PENDING)
   priority    TaskPriority @default(MEDIUM)
-  projectId   String
-  memberId    String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  projectId   String       @map("project_id")
+  memberId    String?      @map("member_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
   activities  Activity[]
   member      Member?      @relation(fields: [memberId], references: [id])
   project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -67,10 +67,10 @@ model WorkLog {
   id          String   @id @default(cuid())
   hours       Float
   description String?
-  workDate    DateTime
-  memberId    String
-  taskId      String
-  createdAt   DateTime @default(now())
+  workDate    DateTime @map("work_date")
+  memberId    String   @map("member_id")
+  taskId      String   @map("task_id")
+  createdAt   DateTime @default(now()) @map("created_at")
   member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
   task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
@@ -83,9 +83,9 @@ model Activity {
   id        String   @id @default(cuid())
   action    String
   timestamp DateTime @default(now())
-  projectId String
-  memberId  String
-  taskId    String?
+  projectId String   @map("project_id")
+  memberId  String   @map("member_id")
+  taskId    String?  @map("task_id")
   member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   task      Task?    @relation(fields: [taskId], references: [id])
@@ -98,13 +98,13 @@ model Activity {
 
 model PeerEvaluation {
   id             String   @id @default(cuid())
-  evaluatorId    String
-  targetMemberId String
+  evaluatorId    String   @map("evaluator_id")
+  targetMemberId String   @map("target_member_id")
   responsibility Int
   communication  Int
   teamwork       Int
   quality        Int
-  createdAt      DateTime @default(now())
+  createdAt      DateTime @default(now()) @map("created_at")
   evaluator      Member   @relation("Evaluator", fields: [evaluatorId], references: [id], onDelete: Cascade)
   targetMember   Member   @relation("TargetMember", fields: [targetMemberId], references: [id], onDelete: Cascade)
 
@@ -113,15 +113,16 @@ model PeerEvaluation {
   @@map("peer_evaluations")
 }
 
-enum TaskStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-}
-
 enum TaskPriority {
   LOW
   MEDIUM
   HIGH
 }
 
+<<<<<<< HEAD:backend/prisma/schema.prisma
+=======
+enum UserRole {
+  ADMIN
+  USER
+}
+>>>>>>> 22d0531 (fix(api): align backend with CI standards):prisma/schema.prisma
