@@ -14,9 +14,7 @@ import { UpdateActivityDto } from './dto/update-activity.dto';
 
 @Controller('activities')
 export class ActivitiesController {
-  constructor(
-    private readonly activitiesService: ActivitiesService,
-  ) {}
+  constructor(private readonly activitiesService: ActivitiesService) {}
 
   @Post()
   create(@Body() dto: CreateActivityDto) {
@@ -62,10 +60,7 @@ export class ActivitiesController {
   // ==============================
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() dto: UpdateActivityDto,
-  ) {
+  update(@Param('id') id: string, @Body() dto: UpdateActivityDto) {
     return this.activitiesService.update(id, dto);
   }
 

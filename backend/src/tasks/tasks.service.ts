@@ -67,10 +67,7 @@ export class TasksService {
     const memberId = task.memberId ?? oldTask.memberId;
 
     if (memberId) {
-      if (
-        dto.status !== undefined &&
-        dto.status !== oldTask.status
-      ) {
+      if (dto.status !== undefined && dto.status !== oldTask.status) {
         await this.prisma.activity.create({
           data: {
             action: `เปลี่ยนสถานะงาน "${task.title}" เป็น ${getStatusLabel(dto.status)}`,
@@ -81,10 +78,7 @@ export class TasksService {
         });
       }
 
-      if (
-        dto.progress !== undefined &&
-        dto.progress !== oldTask.progress
-      ) {
+      if (dto.progress !== undefined && dto.progress !== oldTask.progress) {
         await this.prisma.activity.create({
           data: {
             action: `อัปเดตความคืบหน้างาน "${task.title}" เป็น ${dto.progress}%`,

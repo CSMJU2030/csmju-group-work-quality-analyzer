@@ -16,8 +16,9 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return the API running message', () => {
-       expect(appController.getHello()).toBe('CSMJU TeamWork Analytics API is running',
-  );
+      expect(appController.getHello()).toBe(
+        'CSMJU TeamWork Analytics API is running',
+      );
     });
   });
 });

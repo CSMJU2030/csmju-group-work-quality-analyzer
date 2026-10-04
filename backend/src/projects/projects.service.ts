@@ -12,14 +12,14 @@ export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-  return this.prisma.project.findMany({
-    orderBy: { createdAt: 'asc' },
-    include: {
-      members: { select: { id: true } },
-      tasks: { select: { id: true } },
-    },
-  });
-}
+    return this.prisma.project.findMany({
+      orderBy: { createdAt: 'asc' },
+      include: {
+        members: { select: { id: true } },
+        tasks: { select: { id: true } },
+      },
+    });
+  }
 
   async findOne(id: string) {
     const project = await this.prisma.project.findUnique({
@@ -74,11 +74,11 @@ export class ProjectsService {
     } catch (error) {
       // P2003 = Foreign key constraint (ยังมีสมาชิก/งานผูกอยู่)
       if (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 'P2003'
-    )  {
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 'P2003'
+      ) {
         throw new ConflictException(
           'ไม่สามารถลบโครงงานที่ยังมีสมาชิกหรืองานเชื่อมโยงอยู่',
         );

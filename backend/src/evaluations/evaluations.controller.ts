@@ -13,9 +13,7 @@ import { UpdateEvaluationDto } from './dto/update-evaluation.dto';
 
 @Controller('evaluations')
 export class EvaluationsController {
-  constructor(
-    private readonly evaluationsService: EvaluationsService,
-  ) {}
+  constructor(private readonly evaluationsService: EvaluationsService) {}
 
   @Post()
   create(@Body() dto: CreateEvaluationDto) {
@@ -33,10 +31,7 @@ export class EvaluationsController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() dto: UpdateEvaluationDto,
-  ) {
+  update(@Param('id') id: string, @Body() dto: UpdateEvaluationDto) {
     return this.evaluationsService.update(id, dto);
   }
 

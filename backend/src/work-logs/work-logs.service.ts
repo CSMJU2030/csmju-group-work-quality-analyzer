@@ -55,9 +55,7 @@ export class WorkLogsService {
       data: {
         hours: dto.hours,
         description: dto.description,
-        workDate: dto.workDate
-          ? new Date(dto.workDate)
-          : undefined,
+        workDate: dto.workDate ? new Date(dto.workDate) : undefined,
       },
     });
   }
