@@ -1,0 +1,144 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Project {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  activities  Activity[]
+  members     Member[]
+  tasks       Task[]
+
+  @@map("projects")
+}
+
+model Member {
+  id                  String           @id @default(cuid())
+  name                String
+  role                String?
+  email               String?
+  projectId           String
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  activities          Activity[]
+  project             Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  evaluationsGiven    PeerEvaluation[] @relation("Evaluator")
+  evaluationsReceived PeerEvaluation[] @relation("TargetMember")
+  tasks               Task[]
+  workLogs            WorkLog[]
+
+  @@index([projectId])
+  @@map("members")
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  category    String?
+  hours       Float        @default(0)
+  progress    Int          @default(0)
+  status      TaskStatus   @default(PENDING)
+  priority    TaskPriority @default(MEDIUM)
+  projectId   String
+  memberId    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  activities  Activity[]
+  member      Member?      @relation(fields: [memberId], references: [id])
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  workLogs    WorkLog[]
+
+  @@index([projectId])
+  @@index([memberId])
+  @@map("tasks")
+}
+
+model WorkLog {
+  id          String   @id @default(cuid())
+  hours       Float
+  description String?
+  workDate    DateTime
+  memberId    String
+  taskId      String
+  createdAt   DateTime @default(now())
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@index([taskId])
+  @@map("work_logs")
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  action    String
+  timestamp DateTime @default(now())
+  projectId String
+  memberId  String
+  taskId    String?
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task      Task?    @relation(fields: [taskId], references: [id])
+
+  @@index([projectId])
+  @@index([memberId])
+  @@index([taskId])
+  @@map("activities")
+}
+
+model PeerEvaluation {
+  id             String   @id @default(cuid())
+  evaluatorId    String
+  targetMemberId String
+  responsibility Int
+  communication  Int
+  teamwork       Int
+  quality        Int
+  createdAt      DateTime @default(now())
+  evaluator      Member   @relation("Evaluator", fields: [evaluatorId], references: [id], onDelete: Cascade)
+  targetMember   Member   @relation("TargetMember", fields: [targetMemberId], references: [id], onDelete: Cascade)
+
+  @@index([evaluatorId])
+  @@index([targetMemberId])
+  @@map("peer_evaluations")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
