@@ -125,8 +125,3 @@ enum TaskStatus {
   COMPLETED
 }
 
-enum TaskPriority {
-  LOW
-  MEDIUM
-  HIGH
-}
