@@ -30,13 +30,13 @@ model Member {
   createdAt           DateTime         @default(now()) @map("created_at")
   updatedAt           DateTime         @updatedAt @map("updated_at")
   activities          Activity[]
-  project             Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project             Project          @relation(fields: [projectId], references: [id], onDelete: Cascade, map: "members_projectId_fkey")
   evaluationsGiven    PeerEvaluation[] @relation("Evaluator")
   evaluationsReceived PeerEvaluation[] @relation("TargetMember")
   tasks               Task[]
   workLogs            WorkLog[]
 
-  @@index([projectId])
+  @@index([projectId], map: "members_projectId_idx")
   @@map("members")
 }
 
@@ -54,12 +54,12 @@ model Task {
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
   activities  Activity[]
-  member      Member?      @relation(fields: [memberId], references: [id])
-  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  member      Member?      @relation(fields: [memberId], references: [id], map: "tasks_memberId_fkey")
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade, map: "tasks_projectId_fkey")
   workLogs    WorkLog[]
 
-  @@index([projectId])
-  @@index([memberId])
+  @@index([memberId], map: "tasks_memberId_idx")
+  @@index([projectId], map: "tasks_projectId_idx")
   @@map("tasks")
 }
 
@@ -71,11 +71,11 @@ model WorkLog {
   memberId    String   @map("member_id")
   taskId      String   @map("task_id")
   createdAt   DateTime @default(now()) @map("created_at")
-  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade, map: "work_logs_memberId_fkey")
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade, map: "work_logs_taskId_fkey")
 
-  @@index([memberId])
-  @@index([taskId])
+  @@index([memberId], map: "work_logs_memberId_idx")
+  @@index([taskId], map: "work_logs_taskId_idx")
   @@map("work_logs")
 }
 
@@ -86,13 +86,13 @@ model Activity {
   projectId String   @map("project_id")
   memberId  String   @map("member_id")
   taskId    String?  @map("task_id")
-  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  task      Task?    @relation(fields: [taskId], references: [id])
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade, map: "activities_memberId_fkey")
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade, map: "activities_projectId_fkey")
+  task      Task?    @relation(fields: [taskId], references: [id], map: "activities_taskId_fkey")
 
-  @@index([projectId])
-  @@index([memberId])
-  @@index([taskId])
+  @@index([memberId], map: "activities_memberId_idx")
+  @@index([projectId], map: "activities_projectId_idx")
+  @@index([taskId], map: "activities_taskId_idx")
   @@map("activities")
 }
 
@@ -105,11 +105,11 @@ model PeerEvaluation {
   teamwork       Int
   quality        Int
   createdAt      DateTime @default(now()) @map("created_at")
-  evaluator      Member   @relation("Evaluator", fields: [evaluatorId], references: [id], onDelete: Cascade)
-  targetMember   Member   @relation("TargetMember", fields: [targetMemberId], references: [id], onDelete: Cascade)
+  evaluator      Member   @relation("Evaluator", fields: [evaluatorId], references: [id], onDelete: Cascade, map: "peer_evaluations_evaluatorId_fkey")
+  targetMember   Member   @relation("TargetMember", fields: [targetMemberId], references: [id], onDelete: Cascade, map: "peer_evaluations_targetMemberId_fkey")
 
-  @@index([evaluatorId])
-  @@index([targetMemberId])
+  @@index([evaluatorId], map: "peer_evaluations_evaluatorId_idx")
+  @@index([targetMemberId], map: "peer_evaluations_targetMemberId_idx")
   @@map("peer_evaluations")
 }
 
@@ -119,9 +119,29 @@ enum TaskPriority {
   HIGH
 }
 
+
+model User {
+  id       String   @id @default(cuid())
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+
 enum TaskStatus {
   PENDING
   IN_PROGRESS
   COMPLETED
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }
 
