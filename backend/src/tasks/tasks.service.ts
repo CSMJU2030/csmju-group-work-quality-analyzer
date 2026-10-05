@@ -8,22 +8,34 @@ export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateTaskDto) {
-    const task = await this.prisma.task.create({
-      data: dto,
-    });
-
-    if (task.memberId) {
-      await this.prisma.activity.create({
-        data: {
-          action: `สร้างงาน "${task.title}"`,
-          projectId: task.projectId,
-          memberId: task.memberId,
-          taskId: task.id,
-        },
+    return this.prisma.$transaction(async (tx) => {
+      const task = await tx.task.create({
+        data: dto,
       });
-    }
 
-    return task;
+      if (task.memberId) {
+        await tx.workLog.create({
+          data: {
+            hours: 0,
+            description: `สร้างงาน "${task.title}"`,
+            workDate: new Date(),
+            memberId: task.memberId,
+            taskId: task.id,
+          },
+        });
+
+        await tx.activity.create({
+          data: {
+            action: `สร้างงาน "${task.title}"`,
+            projectId: task.projectId,
+            memberId: task.memberId,
+            taskId: task.id,
+          },
+        });
+      }
+
+      return task;
+    });
   }
 
   async findAll() {
@@ -119,19 +131,23 @@ export class TasksService {
   async remove(id: string) {
     const task = await this.findOne(id);
 
-    if (task.memberId) {
-      await this.prisma.activity.create({
-        data: {
-          action: `ลบงาน "${task.title}"`,
-          projectId: task.projectId,
-          memberId: task.memberId,
-          taskId: null,
-        },
-      });
-    }
+    return this.prisma.$transaction(async (tx) => {
+      if (task.memberId) {
+        await tx.activity.create({
+          data: {
+            action: `ลบงาน "${task.title}"`,
+            projectId: task.projectId,
+            memberId: task.memberId,
+            taskId: null,
+          },
+        });
+      }
 
-    return this.prisma.task.delete({
-      where: { id },
+      await tx.workLog.deleteMany({ where: { taskId: id } });
+
+      return tx.task.delete({
+        where: { id },
+      });
     });
   }
 }
