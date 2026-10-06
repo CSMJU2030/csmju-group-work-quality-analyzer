@@ -1,0 +1,8 @@
+**/node_modules
+**/.env*
+**/dist
+**/generated
+**/coverage
+**/*.log
+.git
+.gitignore
