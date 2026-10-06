@@ -11,6 +11,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { WorkLogsModule } from './work-logs/work-logs.module';
 import { ActivitiesModule } from './activities/activities.module';
 import { EvaluationsModule } from './evaluations/evaluations.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { EvaluationsModule } from './evaluations/evaluations.module';
     WorkLogsModule,
     ActivitiesModule,
     EvaluationsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
