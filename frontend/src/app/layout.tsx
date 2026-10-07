@@ -16,11 +16,17 @@ const notoSansThai = Noto_Sans_Thai({
 });
 
 // TODO: เปลี่ยนเป็นชื่อระบบย่อยของคุณ (ต้องตรงกับ display_name ใน subsystem.yaml)
-const DISPLAY_NAME = "ระบบตัวอย่าง";
+const DISPLAY_NAME = "CSMJU TeamWork";
 
-// TODO: เมนูของระบบย่อย — icon เลือกได้จาก NavIconName ใน src/csmju/CsmjuAppShell.tsx
 const NAV: NavItem[] = [
-  { label: "ภาพรวม", labelEn: "Overview", href: "/", icon: "dashboard" },
+  { label: "แดชบอร์ด", labelEn: "Dashboard", href: "/dashboard", icon: "dashboard" },
+  { label: "งาน", labelEn: "Tasks", href: "/tasks", icon: "dashboard" },
+  { label: "สมาชิกทีม", labelEn: "Members", href: "/members", icon: "dashboard" },
+  { label: "โครงงาน", labelEn: "Projects", href: "/projects", icon: "dashboard" },
+  { label: "ความคืบหน้า", labelEn: "Progress", href: "/progress", icon: "dashboard" },
+  { label: "การมีส่วนร่วม", labelEn: "Contribution", href: "/contribution", icon: "dashboard" },
+  { label: "ประวัติการทำงาน", labelEn: "History", href: "/history", icon: "dashboard" },
+  { label: "รายงาน", labelEn: "Reports", href: "/reports", icon: "dashboard" },
 ];
 
 // Core Hub web origin for the "กลับ CSMJU Portal" link — from .env, never hardcoded.
