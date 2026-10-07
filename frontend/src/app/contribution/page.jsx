@@ -22,14 +22,8 @@ function Contribution() {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadContributionData();
-  }, []);
-
   async function loadContributionData() {
     try {
-      setLoading(true);
-
       const [
         membersData,
         tasksData,
@@ -55,6 +49,14 @@ function Contribution() {
       setLoading(false);
     }
   }
+
+useEffect(() => {
+  const load = async () => {
+    await loadContributionData();
+  };
+
+  load();
+}, []);
 
   const memberData = useMemo(() => {
     return members

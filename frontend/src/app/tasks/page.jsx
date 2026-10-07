@@ -86,9 +86,6 @@ function Tasks() {
   // =========================
   // Load data
   // =========================
-  useEffect(() => {
-    loadData();
-  }, []);
 
   async function loadData() {
     try {
@@ -111,6 +108,14 @@ function Tasks() {
       setLoading(false);
     }
   }
+
+useEffect(() => {
+  const load = async () => {
+    await loadData();
+  };
+
+  load();
+}, []);
 
   async function reloadTasks() {
     try {
@@ -701,7 +706,7 @@ function Tasks() {
                   availableMembers.length === 0 && (
                     <p className="mt-1 text-xs text-slate-500">
                       โครงการนี้ยังไม่มีสมาชิก
-                      กรุณาเพิ่มสมาชิกที่หน้า "สมาชิกทีม" ก่อน
+                      กรุณาเพิ่มสมาชิกที่หน้า &quot;สมาชิกทีมquot; ก่อน
                     </p>
                   )}
               </div>

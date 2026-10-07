@@ -16,10 +16,6 @@ function History() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    loadHistoryData();
-  }, []);
-
   async function loadHistoryData() {
     try {
       setLoading(true);
@@ -38,6 +34,13 @@ function History() {
     }
   }
 
+useEffect(() => {
+  const load = async () => {
+    await loadHistoryData();
+  };
+
+  load();
+}, []);
   /*
    * Build History Data
    * (backend ส่ง member และ task มาให้แล้วผ่าน include)

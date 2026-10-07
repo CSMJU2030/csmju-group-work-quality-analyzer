@@ -27,10 +27,6 @@ function Dashboard() {
   // =========================
   // Load Dashboard Data
   // =========================
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
   async function loadDashboardData() {
     try {
       setLoading(true);
@@ -55,6 +51,14 @@ function Dashboard() {
     }
   }
 
+useEffect(() => {
+  const load = async () => {
+    await loadDashboardData();
+  };
+
+  load();
+}, []);
+
   // =========================
   // Task Statistics
   // =========================
@@ -68,9 +72,6 @@ function Dashboard() {
     (task) => task.status === "IN_PROGRESS"
   ).length;
 
-  const pendingTasks = tasks.filter(
-    (task) => task.status === "PENDING"
-  ).length;
 
   // =========================
   // Project Progress

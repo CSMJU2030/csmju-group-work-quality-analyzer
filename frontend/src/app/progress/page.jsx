@@ -20,10 +20,6 @@ function Progress() {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadProgressData();
-  }, []);
-
   async function loadProgressData() {
     try {
       setLoading(true);
@@ -47,6 +43,14 @@ function Progress() {
       setLoading(false);
     }
   }
+
+useEffect(() => {
+  const load = async () => {
+    await loadProgressData();
+  };
+
+  load();
+}, []);
 
   /*
    * =========================
