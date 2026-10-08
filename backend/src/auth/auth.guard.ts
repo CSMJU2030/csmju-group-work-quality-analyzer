@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import type { Request } from 'express';
 import { TokenVerifier, VerifiedToken } from './token-verifier.service';
 import { authSettings } from './auth.config';
+import { readCookie } from './cookies';
 
 export type AuthedRequest = Request & { user?: VerifiedToken };
 
@@ -18,9 +19,7 @@ export class AuthGuard implements CanActivate {
     const header = req.headers.authorization;
     let token: string | undefined;
     if (header?.startsWith('Bearer ')) token = header.slice(7).trim();
-    else token = (req.cookies as Record<string, string> | undefined)?.[
-      authSettings(this.cfg).sessionCookie
-    ];
+    else token = readCookie(req, authSettings(this.cfg).sessionCookie);
 
     const user = token ? await this.verifier.verify(token) : null;
     if (!user) {

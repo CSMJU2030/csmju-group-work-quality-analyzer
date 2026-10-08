@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { randomBytes, timingSafeEqual } from 'crypto';
 import type { Request, Response } from 'express';
 import { ALLOWED_ROLES, authSettings } from './auth.config';
+import { readCookie } from './cookies';
 import { safeNext } from './next-path';
 import { TokenVerifier } from './token-verifier.service';
 import { AuthGuard, AuthedRequest } from './auth.guard';
@@ -57,23 +58,36 @@ export class AuthController {
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Referrer-Policy', 'no-referrer');
 
-    if (!token) return res.status(400).json({ error: { code: 'BAD_REQUEST', message: 'access_token required' } });
+    if (!token) {
+      return res
+        .status(400)
+        .json({ error: { code: 'BAD_REQUEST', message: 'access_token required' } });
+    }
 
     // มาจาก sidebar ของ Core Hub: ทิ้ง token ไม่แตะคุกกี้ใดๆ
     if (!state) return res.redirect(302, '/auth/login');
 
     // เผาคุกกี้ state ทิ้งก่อนตรวจ (ใช้ได้ครั้งเดียว)
-    const stored = (req.cookies as Record<string, string> | undefined)?.[s.stateCookie];
-    res.clearCookie(s.stateCookie, { path: '/auth/callback', httpOnly: true, sameSite: 'lax', secure: s.secure });
+    const stored = readCookie(req, s.stateCookie);
+    res.clearCookie(s.stateCookie, {
+      path: '/auth/callback',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: s.secure,
+    });
 
     const [storedState, storedNext] = (stored ?? '').split('.');
     if (!stored || !storedState || !eq(storedState, state)) {
-      if (req.accepts(['json', 'html']) === 'html') return res.status(401).type('html').send(RETRY_HTML);
+      if (req.accepts(['json', 'html']) === 'html') {
+        return res.status(401).type('html').send(RETRY_HTML);
+      }
       return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Invalid state' } });
     }
 
     const user = await this.verifier.verify(token);
-    if (!user) return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Invalid token' } });
+    if (!user) {
+      return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Invalid token' } });
+    }
     if (!ALLOWED_ROLES.includes(user.role)) {
       return res.status(403).json({ error: { code: 'FORBIDDEN', message: 'Role not allowed' } });
     }
@@ -100,8 +114,18 @@ export class AuthController {
   logout(@Res() res: Response) {
     const s = authSettings(this.cfg);
     res.setHeader('Cache-Control', 'no-store');
-    res.clearCookie(s.sessionCookie, { path: '/', httpOnly: true, sameSite: 'lax', secure: s.secure });
-    res.clearCookie(s.stateCookie, { path: '/auth/callback', httpOnly: true, sameSite: 'lax', secure: s.secure });
+    res.clearCookie(s.sessionCookie, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: s.secure,
+    });
+    res.clearCookie(s.stateCookie, {
+      path: '/auth/callback',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: s.secure,
+    });
     return res.redirect(303, `${s.webUrl}/logout`);
   }
 }
