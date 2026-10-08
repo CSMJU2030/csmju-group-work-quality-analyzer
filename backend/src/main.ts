@@ -5,8 +5,9 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+
   app.setGlobalPrefix('api/v1', {
-    exclude: ['api/health'],
+    exclude: ['api/health', 'auth/login', 'auth/callback', 'auth/logout'],
   });
 
   app.enableCors({
