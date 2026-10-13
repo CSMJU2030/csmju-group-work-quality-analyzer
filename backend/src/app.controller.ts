@@ -5,10 +5,11 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('health')
+    @Get('health')
   getHealth() {
     return {
       status: 'ok',
+      service: process.env.SUBSYSTEM_ID ?? 'csmju-group-work-quality-analyzer',
     };
   }
 
